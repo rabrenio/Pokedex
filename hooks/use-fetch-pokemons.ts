@@ -1,4 +1,4 @@
-import type { PokemonEndpoints, PokemonPaginatedApiResponse } from '@/types/pokemon-api'
+import type { PokemonEndpoints, PokemonPaginatedApiResponse } from '@/types/pokemon'
 import { buildPokemonApiUrl } from '@/utils/pokemon-api'
 import useFetch from './use-fetch'
 
