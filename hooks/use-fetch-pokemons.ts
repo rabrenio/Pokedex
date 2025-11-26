@@ -1,4 +1,4 @@
-import type { PokemonApiResponse, PokemonEndpoints } from '@/types/pokemon-api'
+import type { PokemonEndpoints, PokemonPaginatedApiResponse } from '@/types/pokemon-api'
 import { buildPokemonApiUrl } from '@/utils/pokemon-api'
 import useFetch from './use-fetch'
 
@@ -13,7 +13,7 @@ export function useFetchPokemons(
 ) {
   const baseUrl = buildPokemonApiUrl(endpoint)
 
-  const { data, ...result } = useFetch<PokemonApiResponse<Pokemon>>(
+  const { data, ...result } = useFetch<PokemonPaginatedApiResponse<Pokemon>>(
     `${baseUrl}?${new URLSearchParams(queryParams).toString()}`,
     (prevData, nextData) => ({
       ...nextData,
