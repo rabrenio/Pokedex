@@ -19,7 +19,8 @@ export default function RootLayout() {
           headerStyle: { backgroundColor: Colors.primary.base },
         }}
       >
-        <Stack.Screen name="index" options={{ title: 'Pokedex' }} />
+        <Stack.Screen name="index" options={{ title: 'Login' }} />
+        <Stack.Screen name="pokemons" options={{ title: 'Pokedex' }} />
         <Stack.Screen
           name="[pokemon]"
           options={{

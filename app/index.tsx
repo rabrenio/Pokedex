@@ -1,94 +1,105 @@
-import ErrorMessage from '@/components/error-message'
-import Loading from '@/components/loading'
-import PokemonId from '@/components/pokemon-id'
-import { Colors, Fonts, Spacing } from '@/constants/theme'
-import { useFetchPokemons } from '@/hooks/use-fetch-pokemons'
-import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { Image } from 'expo-image'
-import { Link } from 'expo-router'
+import { BorderRadius, Colors, Fonts, Spacing } from '@/constants/theme'
+import { useRouter } from 'expo-router'
 import { useState } from 'react'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
-import Animated, { LinearTransition } from 'react-native-reanimated'
+import {
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+    type TextInputProps,
+} from 'react-native'
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.gray[100],
+    padding: Spacing.base,
     flex: 1,
-  },
-  pokemonItem: {
-    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    padding: Spacing.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.gray[200],
   },
-  pokemonItemNameText: {
-    fontSize: Fonts.size.md,
-    color: Colors.gray[400],
-    textTransform: 'capitalize',
+  appName: {
+    fontSize: Fonts.size.heading,
+    fontWeight: 700,
+    textAlign: 'center',
+    marginBottom: Spacing.base
   },
-  pokemonSprite: {
-    width: 80,
-    height: 80,
-    marginLeft: Spacing.xxs,
+  innerContainer: {
+    maxWidth: 320,
+    width: '100%',
+    gap: Spacing.xs,
   },
-  pokemonIdContainer: {
-    marginBottom: Spacing.xxs,
-    marginRight: 'auto',
+  textInputContainer: {
+    gap: Spacing.xxs,
   },
-  pokemonItemChevron: {
-    marginLeft: 'auto',
-    color: Colors.gray[300],
+  textInput: {
+    height: 40,
+    paddingHorizontal: Spacing.xs,
+    borderWidth: 1,
+    borderColor: Colors.gray[300],
+    borderRadius: BorderRadius.sm,
   },
-  errorText: {
-    fontSize: Fonts.size.xl,
-    color: Colors.primary.dark,
+  textInputLabel: {
+    color: Colors.gray[900],
+  },
+  loginBtn: {
+    backgroundColor: Colors.secondary.base,
+    padding: Spacing.base,
+    borderRadius: BorderRadius.sm,
+  },
+  loginBtnDisabled: {
+    backgroundColor: Colors.secondary.light,
+  },
+  loginBtnTxt: {
+    fontWeight: 700,
+    color: Colors.white[100],
+    textAlign: 'center',
   },
 })
 
-const pageLimit = 20
+type TextFieldProps = {
+  label: string
+} & TextInputProps
 
-export default function Home() {
-  const [offset, setOffset] = useState(0)
-  const { data, error, loading } = useFetchPokemons('pokemon', {
-    offset: offset.toString(),
-    limit: pageLimit.toString(),
-  })
+function TextField({ label, ...input }: TextFieldProps) {
+  return (
+    <View style={styles.textInputContainer}>
+      <Text style={styles.textInputLabel}>{label}</Text>
+      <TextInput {...input} style={styles.textInput} />
+    </View>
+  )
+}
 
-  if (!data && loading) return <Loading />
-  if (error) return <ErrorMessage>Error loading pokemons</ErrorMessage>
-  if (!data) return null
+export default function Login() {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const router = useRouter()
+
+  const disabled = !username || !password
 
   return (
     <View style={styles.container}>
-      <Animated.FlatList
-        itemLayoutAnimation={LinearTransition}
-        data={data.results}
-        onEndReached={() => {
-          if (!loading && data.results.length < data.count)
-            setOffset(prev => prev + pageLimit)
-        }}
-        renderItem={item => (
-          <Link asChild style={styles.pokemonItem} href={`/${item.item.name}`}>
-            <Pressable>
-              <View>
-                <PokemonId
-                  id={item.item.id}
-                  style={styles.pokemonIdContainer}
-                />
-                <Text style={styles.pokemonItemNameText}>{item.item.name}</Text>
-              </View>
-              <Image source={item.item.sprite} style={styles.pokemonSprite} />
-
-              <MaterialIcons
-                name="chevron-right"
-                size={Fonts.size.heading}
-                style={styles.pokemonItemChevron}
-              />
-            </Pressable>
-          </Link>
-        )}
-      />
+      <View style={styles.innerContainer}>
+        <Text style={styles.appName}>Pokedex</Text>
+        <TextField
+          label="Username"
+          onChangeText={value => setUsername(value)}
+        />
+        <TextField
+          secureTextEntry
+          label="Password"
+          onChangeText={value => setPassword(value)}
+        />
+        <TouchableOpacity
+          style={[
+            styles.loginBtn,
+            disabled ? styles.loginBtnDisabled : undefined,
+          ]}
+          disabled={disabled}
+          onPress={() => router.replace('/pokemons')}
+        >
+          <Text style={styles.loginBtnTxt}>LOGIN</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
